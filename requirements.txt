@@ -6,4 +6,4 @@ pandas
 numpy
 openpyxl
 google-generativeai
-gunicorn
+uvicorn
