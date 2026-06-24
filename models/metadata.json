@@ -1,0 +1,52 @@
+{
+    "model_type": "Ensemble (RF + XGBoost)",
+    "version": "v4",
+    "xgboost_accuracy": 0.86875,
+    "random_forest_accuracy": 0.825,
+    "ensemble_accuracy": 0.8609375,
+    "xgboost_train_accuracy": 0.9069585613760751,
+    "random_forest_train_accuracy": 0.8424550430023455,
+    "cv_mean_xgb": 0.8605330594679186,
+    "cv_std_xgb": 0.008198485164875279,
+    "cv_mean_rf": 0.8195730633802818,
+    "cv_std_rf": 0.01648298018059208,
+    "features": [
+        "Temperature_C",
+        "Humidity_Pct",
+        "Transit_Duration_Hours",
+        "Min_Optimal_Temp_C",
+        "Max_Optimal_Temp_C",
+        "Min_Optimal_Humidity_Pct",
+        "Max_Optimal_Humidity_Pct",
+        "Base_Shelf_Life_Hours",
+        "category_encoded",
+        "season_encoded"
+    ],
+    "num_features": 10,
+    "classes": [
+        "Safe",
+        "Spoiled",
+        "Warning"
+    ],
+    "categories": [
+        "Bakery",
+        "Dairy",
+        "Fruit",
+        "Grain",
+        "Meat",
+        "Poultry",
+        "Processed",
+        "Seafood",
+        "Vegetable"
+    ],
+    "seasons": [
+        "Monsoon",
+        "Spring",
+        "Summer",
+        "Winter"
+    ],
+    "ensemble_weights": {
+        "random_forest": 0.48781029497761746,
+        "xgboost": 0.5121897050223826
+    }
+}

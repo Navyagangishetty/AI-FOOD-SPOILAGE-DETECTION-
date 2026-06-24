@@ -1,0 +1,417 @@
+{
+    "food_map": {
+        "Vegetable": [
+            "Cucumber",
+            "Carrot",
+            "Sweet Potato",
+            "Broccoli",
+            "Lettuce",
+            "Potato",
+            "Garlic",
+            "Cauliflower",
+            "Tomato",
+            "Onion",
+            "Peas",
+            "Mushroom",
+            "Capsicum",
+            "Spinach"
+        ],
+        "Seafood": [
+            "Squid",
+            "Salmon",
+            "Tuna",
+            "Shrimp",
+            "Mackerel"
+        ],
+        "Meat": [
+            "Lamb",
+            "Beef Steak",
+            "Pork Chop",
+            "Chicken Breast"
+        ],
+        "Fruit": [
+            "Apple",
+            "Papaya",
+            "Banana",
+            "Watermelon",
+            "Pineapple",
+            "Mango",
+            "Strawberry",
+            "Grapes",
+            "Lemon"
+        ],
+        "Dairy": [
+            "Milk",
+            "Cheddar Cheese",
+            "Yogurt",
+            "Butter",
+            "Paneer"
+        ],
+        "Grain": [
+            "Corn"
+        ],
+        "Poultry": [
+            "Eggs"
+        ],
+        "Processed": [
+            "Tofu"
+        ],
+        "Bakery": [
+            "Bread"
+        ]
+    },
+    "thresholds": {
+        "Apple": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 1440.0
+        },
+        "Banana": {
+            "Min_Optimal_Temp_C": 13.0,
+            "Max_Optimal_Temp_C": 18.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 168.0
+        },
+        "Beef Steak": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Bread": {
+            "Min_Optimal_Temp_C": 15.0,
+            "Max_Optimal_Temp_C": 25.0,
+            "Min_Optimal_Humidity_Pct": 50.0,
+            "Max_Optimal_Humidity_Pct": 60.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Broccoli": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 95.0,
+            "Max_Optimal_Humidity_Pct": 100.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Butter": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 8.0,
+            "Min_Optimal_Humidity_Pct": 75.0,
+            "Max_Optimal_Humidity_Pct": 85.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Capsicum": {
+            "Min_Optimal_Temp_C": 7.0,
+            "Max_Optimal_Temp_C": 12.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 336.0
+        },
+        "Carrot": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 95.0,
+            "Max_Optimal_Humidity_Pct": 100.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Cauliflower": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 95.0,
+            "Max_Optimal_Humidity_Pct": 100.0,
+            "Base_Shelf_Life_Hours": 168.0
+        },
+        "Cheddar Cheese": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 8.0,
+            "Min_Optimal_Humidity_Pct": 75.0,
+            "Max_Optimal_Humidity_Pct": 85.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Chicken Breast": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Corn": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Cucumber": {
+            "Min_Optimal_Temp_C": 8.0,
+            "Max_Optimal_Temp_C": 12.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 168.0
+        },
+        "Eggs": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 75.0,
+            "Max_Optimal_Humidity_Pct": 80.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Garlic": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 60.0,
+            "Max_Optimal_Humidity_Pct": 70.0,
+            "Base_Shelf_Life_Hours": 4320.0
+        },
+        "Grapes": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 2.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 480.0
+        },
+        "Lamb": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Lemon": {
+            "Min_Optimal_Temp_C": 8.0,
+            "Max_Optimal_Temp_C": 12.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Lettuce": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 95.0,
+            "Max_Optimal_Humidity_Pct": 100.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Mackerel": {
+            "Min_Optimal_Temp_C": -1.0,
+            "Max_Optimal_Temp_C": 3.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 30.0
+        },
+        "Mango": {
+            "Min_Optimal_Temp_C": 13.0,
+            "Max_Optimal_Temp_C": 18.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 336.0
+        },
+        "Milk": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Mushroom": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Onion": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 65.0,
+            "Max_Optimal_Humidity_Pct": 70.0,
+            "Base_Shelf_Life_Hours": 4320.0
+        },
+        "Paneer": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 120.0
+        },
+        "Papaya": {
+            "Min_Optimal_Temp_C": 10.0,
+            "Max_Optimal_Temp_C": 15.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 120.0
+        },
+        "Peas": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Pineapple": {
+            "Min_Optimal_Temp_C": 10.0,
+            "Max_Optimal_Temp_C": 15.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 240.0
+        },
+        "Pork Chop": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Potato": {
+            "Min_Optimal_Temp_C": 4.0,
+            "Max_Optimal_Temp_C": 8.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 2160.0
+        },
+        "Salmon": {
+            "Min_Optimal_Temp_C": -1.0,
+            "Max_Optimal_Temp_C": 2.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Shrimp": {
+            "Min_Optimal_Temp_C": -1.0,
+            "Max_Optimal_Temp_C": 2.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 36.0
+        },
+        "Spinach": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 95.0,
+            "Max_Optimal_Humidity_Pct": 100.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Squid": {
+            "Min_Optimal_Temp_C": -1.0,
+            "Max_Optimal_Temp_C": 2.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 36.0
+        },
+        "Strawberry": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Sweet Potato": {
+            "Min_Optimal_Temp_C": 12.0,
+            "Max_Optimal_Temp_C": 16.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 1440.0
+        },
+        "Tofu": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Tomato": {
+            "Min_Optimal_Temp_C": 8.0,
+            "Max_Optimal_Temp_C": 13.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 168.0
+        },
+        "Tuna": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 40.0
+        },
+        "Watermelon": {
+            "Min_Optimal_Temp_C": 10.0,
+            "Max_Optimal_Temp_C": 15.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 336.0
+        },
+        "Yogurt": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 168.0
+        }
+    },
+    "category_defaults": {
+        "Bakery": {
+            "Min_Optimal_Temp_C": 15.0,
+            "Max_Optimal_Temp_C": 25.0,
+            "Min_Optimal_Humidity_Pct": 50.0,
+            "Max_Optimal_Humidity_Pct": 60.0,
+            "Base_Shelf_Life_Hours": 72.0
+        },
+        "Dairy": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 168.0
+        },
+        "Fruit": {
+            "Min_Optimal_Temp_C": 10.0,
+            "Max_Optimal_Temp_C": 15.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 336.0
+        },
+        "Grain": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 48.0
+        },
+        "Meat": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 84.0
+        },
+        "Poultry": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 75.0,
+            "Max_Optimal_Humidity_Pct": 80.0,
+            "Base_Shelf_Life_Hours": 720.0
+        },
+        "Processed": {
+            "Min_Optimal_Temp_C": 2.0,
+            "Max_Optimal_Temp_C": 6.0,
+            "Min_Optimal_Humidity_Pct": 80.0,
+            "Max_Optimal_Humidity_Pct": 90.0,
+            "Base_Shelf_Life_Hours": 96.0
+        },
+        "Seafood": {
+            "Min_Optimal_Temp_C": -1.0,
+            "Max_Optimal_Temp_C": 2.0,
+            "Min_Optimal_Humidity_Pct": 85.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 36.0
+        },
+        "Vegetable": {
+            "Min_Optimal_Temp_C": 0.0,
+            "Max_Optimal_Temp_C": 4.0,
+            "Min_Optimal_Humidity_Pct": 90.0,
+            "Max_Optimal_Humidity_Pct": 95.0,
+            "Base_Shelf_Life_Hours": 168.0
+        }
+    }
+}

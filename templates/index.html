@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreshSense — AI & IoT Food Spoilage Detection</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ════════════════════════════════════════
+       DESIGN TOKENS
+    ════════════════════════════════════════ */
+    :root {
+      --bg:           #f0ede6;
+      --bg-card:      #faf8f4;
+      --bg-card2:     #f5f2ec;
+      --border:       #ddd8ce;
+      --border-light: #e8e4db;
+
+      --text:         #1c1a16;
+      --text-muted:   #7a7268;
+      --text-light:   #a09890;
+
+      --green-dark:   #2d6a4f;
+      --green:        #40916c;
+      --green-light:  #d8f3dc;
+      --green-mid:    #b7e4c7;
+
+      --amber:        #b5631a;
+      --amber-light:  #fde8cc;
+      --amber-mid:    #f9c784;
+
+      --red-dark:     #9b2226;
+      --red:          #c1121f;
+      --red-light:    #fde8e8;
+      --red-mid:      #f4a0a0;
+
+      --accent:       #3d6b4f;
+      --accent-soft:  #e8f4ed;
+
+      --shadow-sm:    0 1px 3px rgba(28,26,22,.08);
+      --shadow-md:    0 4px 16px rgba(28,26,22,.10);
+      --shadow-lg:    0 12px 40px rgba(28,26,22,.13);
+
+      --radius:       14px;
+      --radius-sm:    8px;
+    }
+
+    /* ════════════════════════════════════════
+       RESET & BASE
+    ════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* subtle grain texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .45;
+    }
+
+    /* ════════════════════════════════════════
+       HEADER
+    ════════════════════════════════════════ */
+    header {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 56px 24px 40px;
+    }
+
+    /* Logo bar */
+    .logo-bar {
+      position: absolute; top: 18px; left: 28px;
+      display: flex; align-items: center; gap: 9px;
+      z-index: 2;
+    }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: #fff;
+      box-shadow: 0 2px 8px rgba(45,106,79,.25);
+    }
+    .logo-text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px; font-weight: 600;
+      color: var(--green-dark);
+      letter-spacing: -.02em;
+    }
+
+    .header-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--green-dark);
+      background: var(--green-light); border: 1px solid var(--green-mid);
+      padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+    }
+    .header-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.15;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--green-dark);
+    }
+
+    .header-sub {
+      margin-top: 14px;
+      font-size: 15px; color: var(--text-muted); max-width: 520px; margin-inline: auto;
+      font-weight: 300;
+    }
+
+    .badges {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 10px; margin-top: 24px;
+    }
+    .badge {
+      font-size: 12px; font-weight: 500; color: var(--text-muted);
+      background: var(--bg-card); border: 1px solid var(--border);
+      padding: 5px 14px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .badge::before { content: '●'; font-size: 8px; color: var(--green); }
+
+    /* ════════════════════════════════════════
+       MAIN LAYOUT
+    ════════════════════════════════════════ */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1140px; margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════════════
+       CARDS
+    ════════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .card-header h2 {
+      font-size: 16px; font-weight: 600; color: var(--text);
+    }
+    .card-header p {
+      font-size: 12.5px; color: var(--text-muted); margin-top: 2px;
+    }
+
+    /* ════════════════════════════════════════
+       FORM
+    ════════════════════════════════════════ */
+    .form-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    .field-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 6px; display: block;
+    }
+
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾'; position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+      color: var(--text-muted); font-size: 13px;
+    }
+
+    select, input[type=number] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-family: inherit; font-size: 14px; color: var(--text);
+      appearance: none; outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    select:focus, input[type=number]:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(64,145,108,.12);
+    }
+
+    .food-meta-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-muted);
+      background: var(--bg-card2); border: 1px solid var(--border-light);
+      padding: 4px 12px; border-radius: 999px; margin-top: 8px;
+    }
+    .food-meta-tag .cat-badge {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--green-dark);
+      background: var(--green-light); padding: 2px 8px; border-radius: 999px;
+    }
+
+    /* two-column fields */
+    .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .input-with-unit { position: relative; }
+    .input-with-unit input { padding-right: 46px; }
+    .unit-label {
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      font-size: 12px; color: var(--text-light);
+      font-family: 'DM Mono', monospace; pointer-events: none;
+    }
+
+    /* gas reference box */
+    .gas-ref {
+      background: var(--bg-card2); border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      margin-top: 8px;
+      display: flex; flex-wrap: wrap; gap: 12px;
+    }
+    .gas-ref-title {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--text-muted);
+      width: 100%;
+    }
+    .gas-dot {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-green  { background: var(--green); }
+    .dot-amber  { background: var(--amber); }
+    .dot-red    { background: var(--red); }
+
+    /* CTA */
+    .btn-predict {
+      margin-top: 4px;
+      width: 100%; padding: 15px;
+      background: var(--green-dark);
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; letter-spacing: .02em;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      box-shadow: 0 3px 10px rgba(45,106,79,.25);
+    }
+    .btn-predict:hover { background: #245c41; box-shadow: 0 6px 18px rgba(45,106,79,.35); }
+    .btn-predict:active { transform: translateY(1px); }
+    .btn-predict.loading {
+      pointer-events: none; opacity: .75;
+    }
+    .btn-predict.loading::after {
+      content: ' ⟳'; display: inline-block; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ════════════════════════════════════════
+       RESULT PANEL
+    ════════════════════════════════════════ */
+    #result-panel { display: none; flex-direction: column; gap: 16px; }
+    #result-panel.visible { display: flex; animation: fadeUp .35s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Status banner */
+    .status-banner {
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 14px;
+      border: 1.5px solid;
+    }
+    .status-banner.safe    { background: var(--green-light);  border-color: var(--green-mid); }
+    .status-banner.warning { background: var(--amber-light);  border-color: var(--amber-mid); }
+    .status-banner.critical{ background: var(--red-light);    border-color: var(--red-mid); }
+    .status-banner.spoiled { background: var(--red-light);    border-color: var(--red-mid); }
+
+    .status-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .safe    .status-icon { background: var(--green);     color: #fff; }
+    .warning .status-icon { background: var(--amber);     color: #fff; }
+    .critical .status-icon{ background: var(--red);       color: #fff; }
+    .spoiled  .status-icon{ background: var(--red);       color: #fff; }
+
+    .status-title { font-size: 17px; font-weight: 700; }
+    .safe     .status-title { color: var(--green-dark); }
+    .warning  .status-title { color: var(--amber); }
+    .critical .status-title { color: var(--red-dark); }
+    .spoiled  .status-title { color: var(--red-dark); }
+
+    .status-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Metrics row */
+    .metrics-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+
+    .quality-row {
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 14px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .quality-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; width: 110px;
+    }
+    .quality-bar-wrap {
+      flex: 1; height: 8px; background: var(--border);
+      border-radius: 999px; overflow: hidden;
+    }
+    .quality-bar {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), #52b788);
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .quality-score-num {
+      font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+      color: var(--text); width: 70px; text-align: right;
+    }
+
+    /* recommendation */
+    .rec-box {
+      padding: 14px 20px;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .rec-box .tick { color: var(--green); font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+
+    /* stat grid */
+    .stat-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      background: var(--border-light);
+    }
+    .stat-cell {
+      background: var(--bg-card); padding: 16px 20px;
+    }
+    .stat-cell-label {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-light);
+    }
+    .stat-cell-value {
+      font-size: 24px; font-weight: 700; color: var(--text);
+      margin-top: 4px; font-family: 'DM Mono', monospace;
+      letter-spacing: -.02em;
+    }
+    .stat-cell-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+    /* shelf life progress */
+    .shelf-section { padding: 16px 20px; border-top: 1px solid var(--border-light); }
+    .shelf-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .shelf-title {
+      font-size: 11px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .shelf-numbers {
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      font-weight: 600; color: var(--amber);
+    }
+    .shelf-bar-track {
+      height: 10px; background: var(--border); border-radius: 999px; overflow: hidden;
+    }
+    .shelf-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--amber-mid), var(--amber));
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .shelf-endpoints {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--text-light); margin-top: 5px;
+    }
+
+    /* models agree section */
+    .models-section { padding: 16px 20px; border-top: 1px solid var(--border-light); }
+    .models-title {
+      font-size: 11px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .model-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px; font-size: 13px;
+    }
+    .model-icon {
+      width: 22px; height: 22px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    .model-icon.rf  { background: #d8f3dc; color: var(--green-dark); }
+    .model-icon.xgb { background: #fff3e0; color: #e65100; }
+
+    .model-name { flex: 1; color: var(--text); font-weight: 500; }
+    .model-verdict {
+      font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    }
+    .verdict-safe     { background: var(--green-light); color: var(--green-dark); }
+    .verdict-warning  { background: var(--amber-light); color: var(--amber); }
+    .verdict-critical { background: var(--red-light);   color: var(--red-dark); }
+    .verdict-spoiled  { background: var(--red-light);   color: var(--red-dark); }
+
+    .model-conf {
+      font-family: 'DM Mono', monospace; font-size: 12px;
+      color: var(--text-muted); width: 90px; text-align: right;
+    }
+
+    /* counselor-card (AI) */
+    .counselor-card {
+      margin-top: 16px;
+      background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+      border: 1.5px solid #d0e3ff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,123,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .counselor-card::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(0,123,255,0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .counselor-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    }
+    .counselor-sparkle {
+      font-size: 18px; color: #007bff;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .counselor-name {
+      font-size: 13px; font-weight: 700; color: #0056b3;
+      letter-spacing: .05em; text-transform: uppercase;
+    }
+    .counselor-badge {
+      font-size: 10px; background: #007bff; color: #fff;
+      padding: 2px 7px; border-radius: 4px; margin-left: auto;
+      font-weight: 600;
+    }
+    .counselor-text {
+      font-size: 14.5px; color: #334e68; line-height: 1.6;
+      font-style: italic; min-height: 48px;
+    }
+    .counselor-text::after {
+      content: '|';
+      display: inline-block;
+      width: 2px;
+      background: #007bff;
+      margin-left: 2px;
+      animation: blink 0.8s infinite;
+    }
+    .counselor-text.done::after { display: none; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* placeholder */
+    #placeholder {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 48px 32px; text-align: center;
+    }
+    .placeholder-icon { font-size: 40px; margin-bottom: 14px; }
+    .placeholder-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .placeholder-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 20px;
+      font-size: 12px; color: var(--text-light);
+    }
+
+    /* ════════════════════════════════════════
+       LOADING SPINNER OVERLAY
+    ════════════════════════════════════════ */
+    .spinner-wrap {
+      display: none; align-items: center; justify-content: center;
+      padding: 48px; flex-direction: column; gap: 14px;
+    }
+    .spinner-wrap.active { display: flex; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid var(--border);
+      border-top-color: var(--green); border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    .spinner-text { font-size: 13px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────── -->
+<header>
+  <div class="logo-bar">
+    <div class="logo-icon">🌿</div>
+    <span class="logo-text">FreshSense</span>
+  </div>
+  <div class="header-eyebrow">
+    <span></span> IoT Sensor Intelligence
+  </div>
+  <h1>AI &amp; IoT Based Food Spoilage<br><em>Detection &amp; Prevention</em></h1>
+  <p class="header-sub">
+    FreshSense uses real-time IoT sensor data and machine learning to
+    detect spoilage risk during transport — and tells you exactly what to do about it.
+  </p>
+  <div class="badges">
+    <span class="badge">41 food types</span>
+    <span class="badge">9 categories</span>
+    <span class="badge">RF + XGBoost ensemble model</span>
+    <span class="badge">4-sensor IoT pipeline</span>
+  </div>
+</header>
+
+<!-- ── MAIN GRID ───────────────────────────── -->
+<main>
+
+  <!-- LEFT: Sensor Input Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Sensor Readings</h2>
+      <p>Values from your ESP32 / IoT sensors</p>
+    </div>
+
+    <div class="form-body">
+
+      <!-- Category -->
+      <div>
+        <label class="field-label">Food Category</label>
+        <div class="select-wrap">
+          <select id="food_category" onchange="filterFoods()">
+            {% for cat in categories %}
+            <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Food Type -->
+      <div>
+        <label class="field-label">Food Item</label>
+        <div class="select-wrap">
+          <select id="food_type" onchange="updateFoodMeta()">
+            <!-- Options populated by filterFoods() -->
+          </select>
+        </div>
+        <div class="food-meta-tag">
+          <span class="cat-badge" id="cat-badge">Category</span>
+          <span id="food-shelf">Shelf life — days</span>
+          &nbsp;·&nbsp;
+          <span id="food-temp">Optimal —°C</span>
+          &nbsp;·&nbsp;
+          <span id="food-hum">Humidity —%</span>
+        </div>
+      </div>
+
+      <!-- Season -->
+      <div>
+        <label class="field-label">Season <small>current season</small></label>
+        <div class="select-wrap">
+          <select id="season">
+            <option value="Summer">Summer</option>
+            <option value="Winter">Winter</option>
+            <option value="Monsoon">Monsoon</option>
+            <option value="Spring">Spring</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Temperature & Humidity -->
+      <div class="fields-row">
+        <div>
+          <label class="field-label">Temperature <small>inside container</small></label>
+          <div class="input-with-unit">
+            <input type="number" id="temperature" value="20" step="0.1" />
+            <span class="unit-label">°C</span>
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Humidity <small>relative</small></label>
+          <div class="input-with-unit">
+            <input type="number" id="humidity" value="60" min="0" max="100" step="1" />
+            <span class="unit-label">%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gas Sensors Section -->
+      <div>
+        <label class="field-label">Gas Sensors <small>multi-sensor IoT readings</small></label>
+        <!-- Row 1: CO2 + Ethylene -->
+        <div class="fields-row" style="margin-bottom:12px">
+          <div>
+            <label class="field-label" style="font-size:10px">CO₂ <small>MQ-135</small></label>
+            <div class="input-with-unit">
+              <input type="number" id="co2_ppm" value="400" min="0" step="1" />
+              <span class="unit-label">ppm</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" style="font-size:10px">Ethylene <small>ripening</small></label>
+            <div class="input-with-unit">
+              <input type="number" id="ethylene_ppm" value="0" min="0" step="0.01" />
+              <span class="unit-label">ppm</span>
+            </div>
+          </div>
+        </div>
+        <!-- Row 2: NH3 + H2S -->
+        <div class="fields-row">
+          <div>
+            <label class="field-label" style="font-size:10px">NH₃ <small>ammonia</small></label>
+            <div class="input-with-unit">
+              <input type="number" id="nh3_ppm" value="0" min="0" step="0.01" />
+              <span class="unit-label">ppm</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" style="font-size:10px">H₂S <small>hydrogen sulphide</small></label>
+            <div class="input-with-unit">
+              <input type="number" id="h2s_ppm" value="0" min="0" step="0.001" />
+              <span class="unit-label">ppm</span>
+            </div>
+          </div>
+        </div>
+        <div class="gas-ref" style="margin-top:10px">
+          <span class="gas-ref-title">CO₂ Quick Reference</span>
+          <span class="gas-dot"><span class="dot dot-green"></span> Under 100 — Fresh</span>
+          <span class="gas-dot"><span class="dot dot-amber"></span> 100–250 — Caution</span>
+          <span class="gas-dot"><span class="dot dot-red"></span> Above 250 — Spoiling</span>
+        </div>
+      </div>
+
+      <!-- Transit Hours -->
+      <div>
+        <label class="field-label">Hours in Transit <small>since the truck was loaded</small></label>
+        <div class="input-with-unit">
+          <input type="number" id="transit_hrs" value="8" min="0" step="0.5" />
+          <span class="unit-label">hrs</span>
+        </div>
+      </div>
+
+      <button class="btn-predict" id="btn-predict" onclick="runPrediction()">
+        Check Food Quality
+      </button>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: Result Panel -->
+  <div id="right-col">
+
+    <!-- Placeholder (shown before first prediction) -->
+    <div id="placeholder">
+      <div class="placeholder-icon">🌿</div>
+      <div class="placeholder-title">Ready to analyse</div>
+      <div class="placeholder-sub">Enter sensor values on the left and click<br><strong>Check Food Quality</strong> to see results.</div>
+    </div>
+
+    <!-- Loading -->
+    <div class="spinner-wrap" id="spinner">
+      <div class="spinner"></div>
+      <span class="spinner-text">Running ML models…</span>
+    </div>
+
+    <!-- Results -->
+    <div id="result-panel">
+
+      <!-- Status Banner -->
+      <div class="status-banner" id="status-banner">
+        <div class="status-icon" id="status-icon"></div>
+        <div>
+          <div class="status-title" id="status-title"></div>
+          <div class="status-sub" id="status-sub"></div>
+        </div>
+      </div>
+
+      <!-- Optimal Conditions Card (NEW) -->
+      <div class="metrics-card" style="margin-top: 16px; border-color: var(--green-mid); background: var(--accent-soft);">
+        <div class="card-header" style="padding: 14px 20px; background: rgba(64,145,108,0.05);">
+          <h2 style="font-size: 13px; color: var(--green-dark);">🌿 Optimal Storage Reference</h2>
+        </div>
+        <div class="stat-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div class="stat-cell" style="padding: 12px 15px;">
+            <div class="stat-cell-label">Ideal Temp</div>
+            <div class="stat-cell-value" id="opt-temp-val" style="font-size: 16px; color: var(--green-dark);">--</div>
+          </div>
+          <div class="stat-cell" style="padding: 12px 15px;">
+            <div class="stat-cell-label">Ideal Humidity</div>
+            <div class="stat-cell-value" id="opt-hum-val" style="font-size: 16px; color: var(--green-dark);">--</div>
+          </div>
+          <div class="stat-cell" style="padding: 12px 15px;">
+            <div class="stat-cell-label">Max CO₂</div>
+            <div class="stat-cell-value" id="opt-gas-val" style="font-size: 16px; color: var(--green-dark);">100ppm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Freshness Counselor Card (NEW) -->
+      <div class="counselor-card">
+        <div class="counselor-header">
+          <span class="counselor-sparkle">✨</span>
+          <span class="counselor-name">AI Freshness Counselor</span>
+          <span class="counselor-badge">GEN AI</span>
+        </div>
+        <div class="counselor-text" id="counselor-text">
+          Analysing context and preparing sustainable logistics advice...
+        </div>
+      </div>
+
+      <!-- Metrics Card -->
+      <div class="metrics-card">
+
+        <!-- Quality Score Bar -->
+        <div class="quality-row">
+          <span class="quality-label">Quality Score</span>
+          <div class="quality-bar-wrap">
+            <div class="quality-bar" id="quality-bar" style="width:0%"></div>
+          </div>
+          <span class="quality-score-num" id="quality-score-num">— / 100</span>
+        </div>
+
+        <!-- Recommendation -->
+        <div class="rec-box">
+          <span class="tick">✓</span>
+          <span id="rec-text"></span>
+        </div>
+
+        <!-- 4-stat grid -->
+        <div class="stat-grid">
+          <div class="stat-cell">
+            <div class="stat-cell-label">Shelf Life Left</div>
+            <div class="stat-cell-value" id="stat-shelf"></div>
+            <div class="stat-cell-sub">days remaining</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-label">Confidence</div>
+            <div class="stat-cell-value" id="stat-conf"></div>
+            <div class="stat-cell-sub">model certainty</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-label">Spoilage Progress</div>
+            <div class="stat-cell-value" id="stat-spoilage"></div>
+            <div class="stat-cell-sub">degradation so far</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-label">Temp Deviation</div>
+            <div class="stat-cell-value" id="stat-tempdev"></div>
+            <div class="stat-cell-sub">from optimal range</div>
+          </div>
+        </div>
+
+        <!-- Shelf Life Progress Bar -->
+        <div class="shelf-section">
+          <div class="shelf-header">
+            <span class="shelf-title">Remaining Shelf Life</span>
+            <span class="shelf-numbers" id="shelf-numbers"></span>
+          </div>
+          <div class="shelf-bar-track">
+            <div class="shelf-bar-fill" id="shelf-bar-fill" style="width:0%"></div>
+          </div>
+          <div class="shelf-endpoints">
+            <span>0 days</span>
+            <span id="shelf-total-label"></span>
+          </div>
+        </div>
+
+        <!-- Model Verdicts -->
+        <div class="models-section">
+          <div class="models-title">Model Ensemble Agreement</div>
+          <div class="model-row">
+            <div class="model-icon rf">🌲</div>
+            <span class="model-name">Random Forest</span>
+            <span class="model-verdict" id="rf-verdict"></span>
+            <span class="model-conf" id="rf-conf"></span>
+          </div>
+          <div class="model-row">
+            <div class="model-icon xgb">⚡</div>
+            <span class="model-name">XGBoost</span>
+            <span class="model-verdict" id="xgb-verdict"></span>
+            <span class="model-conf" id="xgb-conf"></span>
+          </div>
+        </div>
+
+      </div><!-- /metrics-card -->
+    </div><!-- /result-panel -->
+  </div><!-- /right-col -->
+
+</main>
+
+<footer>
+  FreshSense · AI &amp; IoT Food Spoilage Detection &amp; Prevention · food_spoliage_final.xlsx dataset · RF + XGBoost Ensemble
+</footer>
+
+<!-- ══════════════════════════════════════════
+     FOOD METADATA (injected from Flask)
+══════════════════════════════════════════ -->
+<script>
+  // Food data from Python backend
+  const FOOD_META = {{ food_data | tojson }};
+  const GROUPED_FOODS = {{ grouped_foods | tojson }};
+
+  const catSelect = document.getElementById('food_category');
+  const foodSelect = document.getElementById('food_type');
+
+  // ── Dependent Dropdown Logic ──
+  function filterFoods() {
+    const cat = catSelect.value;
+    const items = GROUPED_FOODS[cat] || [];
+    
+    // Clear current options
+    foodSelect.innerHTML = '';
+    
+    // Populate new options
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      foodSelect.appendChild(opt);
+    });
+    
+    updateFoodMeta();
+  }
+
+  function updateFoodMeta() {
+    const food = foodSelect.value;
+    const meta = FOOD_META[food];
+    if (!meta) return;
+    document.getElementById('cat-badge').textContent   = meta.category;
+    document.getElementById('food-shelf').textContent  = `Shelf life ${meta.shelf_life_days} days`;
+    document.getElementById('food-temp').textContent   = `Temp: ${meta.opt_temp[0]}–${meta.opt_temp[1]}°C`;
+    document.getElementById('food-hum').textContent    = `Hum: ${meta.opt_humidity[0]}–${meta.opt_humidity[1]}%`;
+  }
+
+  // Initial call
+  filterFoods();
+
+  // ── Prediction ──
+  async function runPrediction() {
+    const btn = document.getElementById('btn-predict');
+    const spinner = document.getElementById('spinner');
+    const placeholder = document.getElementById('placeholder');
+    const panel = document.getElementById('result-panel');
+
+    // Show loading
+    btn.classList.add('loading');
+    btn.textContent = 'Analysing…';
+    placeholder.style.display = 'none';
+    panel.classList.remove('visible');
+    spinner.classList.add('active');
+
+    const payload = {
+      food_type:    document.getElementById('food_type').value,
+      temperature:  parseFloat(document.getElementById('temperature').value),
+      humidity:     parseFloat(document.getElementById('humidity').value),
+      co2_ppm:      parseFloat(document.getElementById('co2_ppm').value),
+      ethylene_ppm: parseFloat(document.getElementById('ethylene_ppm').value),
+      nh3_ppm:      parseFloat(document.getElementById('nh3_ppm').value),
+      h2s_ppm:      parseFloat(document.getElementById('h2s_ppm').value),
+      season:       document.getElementById('season').value,
+      transit_hrs:  parseFloat(document.getElementById('transit_hrs').value),
+    };
+
+    try {
+      const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Server error');
+      }
+
+      const data = await res.json();
+      renderResult(data, payload);
+
+    } catch (e) {
+      alert('Error: ' + e.message);
+      placeholder.style.display = '';
+    } finally {
+      spinner.classList.remove('active');
+      btn.classList.remove('loading');
+      btn.textContent = 'Check Food Quality';
+    }
+  }
+
+  // ── Typing Effect Helper ──
+  function typeText(elementId, text, speed = 20) {
+    const el = document.getElementById(elementId);
+    el.innerHTML = '';
+    el.classList.remove('done');
+    let i = 0;
+    
+    function type() {
+      if (i < text.length) {
+        el.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      } else {
+        el.classList.add('done');
+      }
+    }
+    type();
+  }
+
+  // ── Render results ──
+  function renderResult(d, payload) {
+    const statusKey = d.status.toLowerCase(); // safe | warning | critical
+
+    // Status banner
+    const banner = document.getElementById('status-banner');
+    banner.className = `status-banner ${statusKey}`;
+
+    const icons   = { safe: '✓', warning: '⚠', critical: '✕', spoiled: '✕' };
+    const titles  = {
+      safe:     'Safe — No Spoilage Detected',
+      warning:  'Warning — Spoilage Risk Detected',
+      critical: 'Critical — Immediate Action Required',
+      spoiled:  'Spoiled — Immediate Action Required',
+    };
+    const subs = {
+      safe:     'Food quality is good. Continue the journey as planned.',
+      warning:  'Spoilage risk is elevated. Take corrective action soon.',
+      critical: 'High spoilage probability. Immediate intervention required.',
+      spoiled:  'High spoilage probability. Immediate intervention required.',
+    };
+
+    document.getElementById('status-icon').textContent  = icons[statusKey];
+    document.getElementById('status-title').textContent = titles[statusKey];
+    document.getElementById('status-sub').textContent   = subs[statusKey];
+
+    // Counselor (GenAI Advice)
+    typeText('counselor-text', d.counselor_advice || "Preparing advice...");
+
+    // Optimal Reference
+    if (d.optimal_ranges) {
+        document.getElementById('opt-temp-val').textContent = `${d.optimal_ranges.temp[0]}-${d.optimal_ranges.temp[1]}°C`;
+        document.getElementById('opt-hum-val').textContent  = `${d.optimal_ranges.humidity[0]}-${d.optimal_ranges.humidity[1]}%`;
+    }
+
+    // Quality bar
+    const q = d.fqs;
+    document.getElementById('quality-bar').style.width      = q + '%';
+    document.getElementById('quality-score-num').textContent = `${q} / 100`;
+
+    // Quality bar colour
+    const qBar = document.getElementById('quality-bar');
+    if (q >= 65)      qBar.style.background = 'linear-gradient(90deg,#52b788,#40916c)';
+    else if (q >= 35) qBar.style.background = 'linear-gradient(90deg,#f9c784,#b5631a)';
+    else              qBar.style.background = 'linear-gradient(90deg,#f4a0a0,#c1121f)';
+
+    // Recommendation
+    document.getElementById('rec-text').textContent = d.alert || 'Metrics are within optimal ranges.';
+
+    // Stats
+    const remaining_days = (d.rsl_hours / 24).toFixed(1);
+    
+    document.getElementById('stat-shelf').textContent    = remaining_days + ' days';
+    document.getElementById('stat-conf').textContent     = d.confidence + '%';
+    document.getElementById('stat-spoilage').textContent = d.spoilage_risk + '%';
+    
+    // We don't have temp_deviation from the API natively anymore, so calculate from payload/optimal
+    let temp_deviation = '?';
+    if (d.optimal_ranges && d.optimal_ranges.temp) {
+        let t_min = d.optimal_ranges.temp[0];
+        let t_max = d.optimal_ranges.temp[1];
+        let p_temp = payload.temperature;
+        if (p_temp < t_min) temp_deviation = (t_min - p_temp).toFixed(1);
+        else if (p_temp > t_max) temp_deviation = (p_temp - t_max).toFixed(1);
+        else temp_deviation = 0;
+    }
+    document.getElementById('stat-tempdev').textContent  = temp_deviation + '°C';
+
+    // Shelf bar
+    // We guess the initial shelf since it's not strictly passed, but we know base_shelf_life is in food_data
+    // Or we simply use decay factor to approximate or just take from optimal ranges
+    let initial_shelf_days = remaining_days; // fallback
+    const catData = FOOD_META[payload.food_type];
+    if (catData && catData.shelf_life_days) {
+        initial_shelf_days = catData.shelf_life_days;
+    }
+    
+    const shelfPct = Math.min((remaining_days / initial_shelf_days) * 100, 100);
+    document.getElementById('shelf-bar-fill').style.width  = shelfPct + '%';
+    document.getElementById('shelf-numbers').textContent   = `${remaining_days} of ${initial_shelf_days} days`;
+    document.getElementById('shelf-total-label').textContent = `${initial_shelf_days} days total`;
+
+    // Model verdicts
+    function verdictClass(label) {
+      if(!label) return 'verdict-safe';
+      const map = { Safe: 'verdict-safe', Warning: 'verdict-warning', Critical: 'verdict-critical', Spoiled: 'verdict-spoiled' };
+      return map[label] || 'verdict-safe';
+    }
+
+    const rfV = document.getElementById('rf-verdict');
+    rfV.textContent = d.rf_pred;
+    rfV.className   = `model-verdict ${verdictClass(d.rf_pred)}`;
+    document.getElementById('rf-conf').textContent = 'N/A';
+
+    const xgbV = document.getElementById('xgb-verdict');
+    xgbV.textContent = d.xgb_pred;
+    xgbV.className   = `model-verdict ${verdictClass(d.xgb_pred)}`;
+    document.getElementById('xgb-conf').textContent = 'N/A';
+
+    // Show panel
+    document.getElementById('result-panel').classList.add('visible');
+  }
+</script>
+
+</body>
+</html>
